@@ -1,0 +1,447 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Donor Dash | Dashboard</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href={% static 'css/global.css' %}>
+        <link rel="icon" href={% static 'images/favicon.ico' %}>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+
+    <body>
+
+        <nav class="bg-white w-full border-b-4 border-red-500 shadow-inner shadow-red-200 fixed z-50">
+            <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+                <a href="/" class="flex items-center hover:scale-105 hover:text-red-500 duration-300">
+                    <img src={% static 'images/favicon.ico' %} class="h-8 mr-3" alt="Donor Dash Logo">
+                    <span class="self-center text-2xl font-semibold whitespace-nowrap cursor-pointer font-header">Donor Dash</span>
+                </a>
+                <div class="flex md:order-2">
+                    <a style="visibility:hidden;" disabled ><button type="button" class="text-white bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-black rounded-lg text-md px-4 py-2 text-center mr-3 md:mr-0 font-button">Log In</button></a>
+                    <button onClick="toggle()" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 " aria-controls="navbar-sticky" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="w-5 h-5 text-red-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="items-center justify-between w-full md:flex md:w-auto md:order-1 hidden" id="navbar-sticky">
+                    <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white">
+                        <li><a href="/" class="block py-2 pl-3 pr-4 font-link text-gray-900 rounded hover:bg-gray-100 hover:text-red-500 md:text-xl md:hover:bg-transparent md:hover:text-red-500 md:p-0 hover:scale-105 duration-300 ">Home</a></li>
+                        <li><a href="/about" class="block py-2 pl-3 pr-4 font-link text-gray-900 rounded hover:bg-gray-100 hover:text-red-500 md:text-xl md:hover:bg-transparent md:hover:text-red-500 md:p-0 hover:scale-105 duration-300 ">About</a></li>
+                        <li><a href="/services" class="block py-2 pl-3 pr-4 font-link text-gray-900 rounded hover:bg-gray-100 hover:text-red-500 md:text-xl md:hover:bg-transparent md:hover:text-red-500 md:p-0 hover:scale-105 duration-300 ">Services</a></li>
+                        <li><a href="/login" class="block py-2 pl-3 pr-4 font-link text-white bg-red-500 rounded md:text-xl md:bg-transparent md:text-red-500 md:p-0 hover:scale-105 duration-300">Dashboard</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main class="h-[200px] bg-white w-full border-b border-gray-200 font-button">
+
+            {% if wrong %}
+            <div class="top-20 absolute m-auto left-0 right-0 error mt-2">
+                <p class="text-sm font-link text-center text-red-600">
+                    {{ wrong_text }}
+                </p>
+            </div>
+            {% endif %}
+
+            <div class="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white text-black">
+
+                <div class="fixed flex top-[68px] flex-col top-0 left-0 w-14 hover:w-64 md:w-64 bg-red-700  h-full text-white transition-all duration-300 border-none z-20 sidebar">
+                    <div class="flex items-center py-10 justify-center md:justify-center  w-14 md:w-64 h-14 bg-red-600  border-none">
+                        <img class="w-10 h-10 md:w-10 md:h-10 mr-4 rounded-full overflow-hidden" src={% static "images/dummy-avatar.jpg" %} />
+                        <span class="hidden md:block text-2xl">{{ bloodbank.bloodbank_name }}</span>
+                    </div>
+                    <div class="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
+                    <ul class="flex flex-col py-4 space-y-1">
+                        <li>
+                        <a id="openModalBtn" class="cursor-pointer relative flex flex-row items-center h-11 focus:outline-none hover:bg-red-800 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-red-400 pr-6">
+                            <span class="inline-flex justify-center items-center ml-4">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            </span>
+                            <span class="ml-2 text-sm tracking-wide truncate">Profile</span>
+                        </a>
+                        </li>
+                        <li>
+                            <a href="/bloodbank/donations"class="cursor-pointer relative flex flex-row items-center h-11 focus:outline-none hover:bg-red-800 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-red-400 pr-6">
+                                <span class="inline-flex justify-center items-center ml-4">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                </span>
+                                <span class="ml-2 text-sm tracking-wide truncate">Donations</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/bloodbank/pendingrequests" class="cursor-pointer relative flex flex-row items-center h-11 focus:outline-none hover:bg-red-800 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-red-400 pr-6">
+                                <span class="inline-flex justify-center items-center ml-4">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                </span>
+                                <span class="ml-2 text-sm tracking-wide truncate">Pending Requests</span>
+                            </a>
+                        </li>
+                        <li>
+                        <a href="/logout" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-red-800 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-red-400 pr-6">
+                            <span class="inline-flex justify-center items-center ml-4">
+                                <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-log-out w-5 h-5">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                            </span>
+                            <span class="ml-2 text-sm tracking-wide truncate">LogOut</span>
+                        </a>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+
+
+
+                <!-- Profile Modal -->
+                <div class="relative z-20 hidden duration-500" aria-labelledby="modal-title" role="dialog" aria-modal="true" id="profile-modal">
+                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                
+                    <div class="fixed inset-0 z-10 w-screen overflow-y-auto ">
+                    <div class="flex min-h-full items-center justify-center text-center ">
+                        <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all  h-full sm:w-full sm:max-w-md">
+                        <div class="bg-white">
+                            <div class="relative flex h-32 w-full justify-center rounded-lg bg-cover" >
+                                <img src={% static "images/red-background.png" %} class="absolute flex h-32 w-full justify-center rounded-lg bg-cover"> 
+                                <div class="absolute -bottom-12 flex h-[87px] w-[87px] items-center justify-center rounded-full border-[4px] border-white bg-pink-400 dark:!border-navy-700">
+                                    <img class="h-full w-full rounded-full" src={% static "images/dummy-avatar.jpg" %} />
+                                </div>
+                            </div>
+                            <div class="absolute right-4 top-4 flex justify-end "> 
+                                <button type="button" id="closeModalBtn" class="text-white bg-transparent hover:text-gray-500 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:scale-110 duration-300" data-modal-hide="default-modal">
+                                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+
+                            <div class="max-w-sm mx-auto bg-white rounded-lg overflow-hidden pt-8">
+                                <div class="border-b px-4 pb-6">
+                                    <div class="text-center font-link"> 
+                                        <div class="py-2">
+                                            <h3 class="font-bold text-3xl text-gray-800 mb-1 font-h">{{ bloodbank.bloodbank_name }}</h3>
+                                            <h3 class="font-bold text-sm text-gray-500 mb-8 font-button">{{ user.email }}</h3>
+                                            <div class="inline-flex w-full items-center justify-between gap-x-6">
+                                                <h3 class="font-bold text-xl text-gray-800 font-link">Manager : </h3>
+                                                <h3 class="text-lg text-gray-700 font-button"> {{ bloodbank.manager_name }} </h3>
+                                            </div>
+                                            <div class="inline-flex w-full items-center justify-between gap-x-6">
+                                                <h3 class="font-bold text-xl text-gray-800 font-link">City : </h3>
+                                                <h3 class="text-lg text-gray-700 font-button"> {{ bloodbank.city }} </h3>
+                                            </div>
+                                            <div class="inline-flex w-full items-center justify-between gap-x-6">
+                                                <h3 class="font-bold text-xl text-gray-800 font-link">Pincode : </h3>
+                                                <h3 class="text-lg text-gray-700 font-button"> {{ bloodbank.pincode }} </h3>
+                                            </div>
+                                            <div class="inline-flex w-full items-center justify-between gap-x-6">
+                                                <h3 class="font-bold text-xl text-gray-800 font-link">Address : </h3>
+                                                <h3 class="text-lg text-gray-700 font-button"> {{ bloodbank.address }} </h3>
+                                            </div>
+                                            <div class="inline-flex w-full items-center justify-between gap-x-6">
+                                                <h3 class="font-bold text-xl text-gray-800 font-link">Phone : </h3>
+                                                <h3 class="text-lg text-gray-700 font-button"> {{ bloodbank.phone }} </h3>
+                                            </div>
+                                            <div class="inline-flex w-full items-center justify-between gap-x-6">
+                                                <h3 class="font-bold text-xl text-gray-800 font-link">Employees : </h3>
+                                                <h3 class="text-lg text-gray-700 font-button"> {{ bloodbank.employees }} </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!-- Profile Modal -->
+
+                <!-- Form Modal -->
+                <div class="relative z-30 hidden duration-500" aria-labelledby="modal-title" role="dialog" aria-modal="true" id="form-modal">
+                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                
+                    <div class="fixed inset-0 z-10 w-screen overflow-y-auto rounded-xl my-28">
+                    <div class="flex min-h-full items-center justify-center text-center rounded-xl">
+                        <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all  h-full sm:w-full sm:max-w-md">
+                        <div class="bg-white">
+                            <div class="absolute right-4 top-4 flex justify-end "> 
+                                <button type="button" id="closeModalBtn2" class="text-black bg-transparent hover:text-red-500 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:scale-110 duration-300" data-modal-hide="default-modal">
+                                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <div class="p-5">
+                                <h1 class="text-2xl font-button font-bold font-h leading-tight tracking-tight text-gray-900 md:text-3xl">
+                                    New Camp
+                                </h1>
+                                <form class="space-y-4 md:space-y-6" method="post">
+                                    {% csrf_token %}
+                                    <div>
+                                        <label for="name" class="block mb-2 text-sm font-bold text-gray-900 font-button">Name</label>
+                                        <input type="text" name="name" id="name" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="abc xyz" required>
+                                    </div>
+                                    <div>
+                                        <label for="startdate" class="block mb-2 text-sm font-bold text-gray-900 font-button">Start Date</label>
+                                        <input type="date" name="startdate" id="startdate" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required>
+                                    </div>
+                                    <div>
+                                        <label for="enddate" class="block mb-2 text-sm font-bold text-gray-900 font-button">End Date</label>
+                                        <input type="date" name="enddate" id="enddate" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required>
+                                    </div>
+                                    <div>
+                                        <label for="address" class="block mb-2 text-sm font-bold text-gray-900 font-button">Address</label>
+                                        <input type="text" name="address" id="address" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="C-104, abc, qwerty" required>
+                                    </div>
+                                    <div>
+                                        <label for="city"  class="block mb-2 text-sm font-bold text-gray-900 font-button">City</label>
+                                        <select id="city" name="city" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required>
+                                            <option style="display:none;"></option>
+                                            {% for city in cities %}
+                                                <option value={{ city.0 }}>{{ city.0 }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="pincode" class="block mb-2 text-sm font-bold text-gray-900 font-button">Pincode</label>
+                                        <input type="text" name="pincode" id="pincode" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="XXXXXX" required>
+                                    </div>
+                                    <button type="submit" id="post-button" class="disabled:bg-gray-200 w-full bg-red-500 font-button text-white focus:ring-2 focus:ring-black font-bold rounded-lg text-lg px-5 py-2.5 text-center hover:bg-red-700">Create</button>
+                                </form>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!-- Form Modal -->
+
+                
+                <div class="h-full ml-14 mt-14 md:ml-64">
+                    
+                    <!-- Statistics Cards -->
+                    <div class="w-full pt-20 px-11 sm:px-15">
+                        <h1 class="font-h text-4xl font-bold">Blood Available</h1>   
+                    </div>
+                    <div class="grid grid-cols-4 lg:grid-cols-8 mt-12 px-11 sm:px-15 gap-x-16 gap-y-10">
+                        <div class="h-32 relative flex items-end justify-center bg-gray-100 w-16 shadow-xl border border-2 border-red-700 rounded-md p-3 text-white font-bold group">
+                            <div class="absolute -top-6 text-red-500 font-link">
+                                {{ amount_a_pos }} ml
+                            </div>
+                            <p class="font-button text-center text-md text-white bg-red-500 z-10 rounded-md p-2">A+</p>
+                            <div class="h-[{{ height_a_pos }}px] w-full absolute z-0 bottom-0 bg-red-500 rounded-md border-b-4 border-red-700">
+                            </div>
+                        </div>
+                        <div class="h-32 relative flex items-end justify-center bg-gray-100 w-16 shadow-xl border border-2 border-red-700 rounded-md p-3 text-white font-bold group">
+                            <div class="absolute -top-6 text-red-500 font-link">
+                                {{ amount_b_pos }} ml
+                            </div>
+                            <p class="font-button text-center text-md z-10 text-white bg-red-500 rounded-md p-2">B+</p>
+                            <div class="h-[{{ height_b_pos }}px] w-full absolute bottom-0 bg-red-500 rounded-md border-b-4 border-red-700">
+                            </div>
+                        </div>
+                        <div class="h-32 relative flex items-end justify-center bg-gray-100 w-16 shadow-xl border border-2 border-red-700 rounded-md p-3 text-white font-bold group">
+                            <div class="absolute -top-6 text-red-500 font-link">
+                                {{ amount_ab_pos }} ml
+                            </div>
+                            <p class="font-button text-center text-md z-10 text-white bg-red-500 rounded-md p-2">AB+</p>
+                            <div class="h-[{{ height_ab_pos }}px] w-full absolute bottom-0 bg-red-500 rounded-md border-b-4 border-red-700">
+                            </div>
+                        </div>
+                        <div class="h-32 relative flex items-end justify-center bg-gray-100 w-16 shadow-xl border border-2 border-red-700 rounded-md p-3 text-white font-bold group">
+                            <div class="absolute -top-6 text-red-500 font-link">
+                                {{ amount_o_pos }} ml
+                            </div>
+                            <p class="font-button text-center text-md z-10 text-white bg-red-500 rounded-md p-2">O+</p>
+                            <div class="h-[{{ height_o_pos }}px] w-full absolute bottom-0 bg-red-500 rounded-md border-b-4 border-red-700">
+                            </div>
+                        </div>
+
+                        <div class="h-32 relative flex items-end justify-center bg-gray-100 w-16 shadow-xl border border-2 border-red-700 rounded-md p-3 text-white font-bold group">
+                            <div class="absolute -top-6 text-red-500 font-link">
+                                {{ amount_a_neg }} ml
+                            </div>
+                            <p class="font-button text-center text-md z-10 text-white bg-red-500 rounded-md p-2">A-</p>
+                            <div class="h-[{{ height_a_neg }}px] w-full absolute bottom-0 bg-red-500 rounded-md border-b-4 border-red-700">
+                            </div>
+                        </div>
+                        <div class="h-32 relative flex items-end justify-center bg-gray-100 w-16 shadow-xl border border-2 border-red-700 rounded-md p-3 text-white font-bold group">
+                            <div class="absolute -top-6 text-red-500 font-link">
+                                {{ amount_b_neg }} ml
+                            </div>
+                            <p class="font-button text-center text-md z-10 text-white bg-red-500 rounded-md p-2">B-</p>
+                            <div class="h-[{{ height_b_neg }}px] w-full absolute bottom-0 bg-red-500 rounded-md border-b-4 border-red-700">
+                            </div>
+                        </div>
+                        <div class="h-32 relative flex items-end justify-center bg-gray-100 w-16 shadow-xl border border-2 border-red-700 rounded-md p-3 text-white font-bold group">
+                            <div class="absolute -top-6 text-red-500 font-link">
+                                {{ amount_ab_neg }} ml
+                            </div>
+                            <p class="font-button text-center text-md z-10 text-white bg-red-500 rounded-md p-2">AB-</p>
+                            <div class="h-[{{ height_ab_neg }}px] w-full absolute bottom-0 bg-red-500 rounded-md border-b-4 border-red-700">
+                            </div>
+                        </div>
+                        <div class="h-32 relative flex items-end justify-center bg-gray-100 w-16 shadow-xl border border-2 border-red-700 rounded-md p-3 text-white font-bold group">
+                            <div class="absolute -top-6 text-red-500 font-link">
+                                {{ amount_o_neg }} ml
+                            </div>
+                            <p class="font-button text-center text-md z-10 text-white bg-red-500 rounded-md p-2">O-</p>
+                            <div class="h-[{{ height_o_neg }}px] w-full absolute bottom-0 bg-red-500 rounded-md border-b-4 border-red-700">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Statistics Cards -->
+                
+                    <!-- Camp Summary -->
+                    <div class="pb-10">
+                        <div class="relative w-full bg-white px-6 pb-8 mb-8 sm:mx-auto sm:rounded-lg sm:px-10">
+                            <div class="mx-auto px-5">
+                                <div class="font-button mx-auto mt-8 grid">
+                                    <div class="w-full ">
+                                        <h1 class="font-h text-4xl font-bold">Camps</h1>   
+                                    </div>
+                                    <a id="openModalBtn2" class="w-[135px] mt-2 mb-6 bg-red-500 flex justify-between items-center  rounded-md text-white hover:shadow-md hover:shadow-red-700 hover:scale-105 duration-300">
+                                        <p class="text-3xl py-1 pl-2 font-button">+</p><p class="font-button font-bold text-md py-1 pr-2">New Camp</p>
+                                    </a>
+
+                                    <div class="w-full">
+                                        <h3 class="font-h text-gray-500 text-xl font-link">Scheduled Camps (<span>{{ num_of_scheduled }}</span>)</h3> 
+                                    </div>                                    
+                                    <div class="mb-12">
+                                        
+                                        {% for camp in scheduled %}
+                                            <div class="py-3">
+                                                <details class="group bg-white shadow-lg rounded-lg">
+                                                    <summary class="flex cursor-pointer list-none items-center justify-between  p-4 ">
+                                                        <p class="text-xl font-link">{{ camp.name }}</p>
+                                                        <p></p>
+                                                        <p class="text-gray-600 font-bold">{{ camp.start_date }} - {{ camp.end_date }}</p>
+                                                        <p></p><p></p>
+                                                        <svg viewBox="0 0 24 24" class="group w-8 h-8 text-gray-400 rounded-full p-[4px] hover:text-gray-700 hover:bg-gray-200  hover:scale-110 duration-300" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                            <circle cx="12" cy="12" r="1"></circle>
+                                                            <circle cx="19" cy="12" r="1"></circle>
+                                                            <circle cx="5" cy="12" r="1"></circle>
+                                                        </svg>
+                                                    </summary>
+                                                    <div class="group-open:animate-fadeIn mt-3 text-neutral-600 grid grid-cols-4 gap-4 p-4">
+                                                        <h2 class="font-bold text-lg">Phone :</h2><p class="col-span-3">{{ camp.address }}</p>
+                                                        <h2 class="font-bold text-lg">City :</h2><p class="col-span-3">{{ camp.city }}</p> 
+                                                        <h2 class="font-bold text-lg">Pincode :</h2><p class="col-span-3">{{ camp.pincode }}</p>
+                                                    </div>
+                                                </details>
+                                            </div>
+                                        {% endfor %}
+
+                                    </div>
+
+                                    <div class="w-full">
+                                        <h3 class="font-h text-gray-500 text-xl font-link">Ongoing Camps (<span>{{ num_of_ongoing }}</span>)</h3> 
+                                    </div>
+                                    <div class="mb-12">
+
+                                        {% for camp in ongoing %}
+                                            <div class="py-3">
+                                                <details class="group bg-white shadow-lg rounded-lg">
+                                                    <summary class="flex cursor-pointer list-none items-center justify-between  p-4 ">
+                                                        <p class="text-xl font-link">{{ camp.name }}</p>
+                                                        <p></p>
+                                                        <p class="text-gray-600 font-bold">{{ camp.start_date }} - {{ camp.end_date }}</p>
+                                                        <p></p><p></p>
+                                                        <svg viewBox="0 0 24 24" class="group w-8 h-8 text-gray-400 rounded-full p-[4px] hover:text-gray-700 hover:bg-gray-200  hover:scale-110 duration-300" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                            <circle cx="12" cy="12" r="1"></circle>
+                                                            <circle cx="19" cy="12" r="1"></circle>
+                                                            <circle cx="5" cy="12" r="1"></circle>
+                                                        </svg>
+                                                    </summary>
+                                                    <div class="group-open:animate-fadeIn mt-3 text-neutral-600 grid grid-cols-4 gap-4 p-4">
+                                                        <h2 class="font-bold text-lg">Phone :</h2><p class="col-span-3">{{ camp.address }}</p>
+                                                        <h2 class="font-bold text-lg">City :</h2><p class="col-span-3">{{ camp.city }}</p> 
+                                                        <h2 class="font-bold text-lg">Pincode :</h2><p class="col-span-3">{{ camp.pincode }}</p>
+                                                    </div>
+                                                </details>
+                                            </div>
+                                        {% endfor %}
+                                        
+                                    </div>
+
+                                    <div class="w-full">
+                                        <h3 class="font-h text-gray-500 text-xl font-link">Past Camps (<span>{{ num_of_past }}</span>)</h3> 
+                                    </div>
+                                    <div class="mb-12">
+
+                                        {% for camp in past %}
+                                            <div class="py-3">
+                                                <details class="group bg-white shadow-lg rounded-lg">
+                                                    <summary class="flex cursor-pointer list-none items-center justify-between  p-4 ">
+                                                        <p class="text-xl font-link">{{ camp.name }}</p>
+                                                        <p></p>
+                                                        <p class="text-gray-600 font-bold">{{ camp.start_date }} - {{ camp.end_date }}</p>
+                                                        <p></p><p></p>
+                                                        <svg viewBox="0 0 24 24" class="group w-8 h-8 text-gray-400 rounded-full p-[4px] hover:text-gray-700 hover:bg-gray-200  hover:scale-110 duration-300" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                            <circle cx="12" cy="12" r="1"></circle>
+                                                            <circle cx="19" cy="12" r="1"></circle>
+                                                            <circle cx="5" cy="12" r="1"></circle>
+                                                        </svg>
+                                                    </summary>
+                                                    <div class="group-open:animate-fadeIn mt-3 text-neutral-600 grid grid-cols-4 gap-4 p-4">
+                                                        <h2 class="font-bold text-lg">Phone :</h2><p class="col-span-3">{{ camp.address }}</p>
+                                                        <h2 class="font-bold text-lg">City :</h2><p class="col-span-3">{{ camp.city }}</p> 
+                                                        <h2 class="font-bold text-lg">Pincode :</h2><p class="col-span-3">{{ camp.pincode }}</p>
+                                                    </div>
+                                                </details>
+                                            </div>
+                                        {% endfor %}
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+   
+                    <!-- Camp Summary -->         
+                                    
+                    <footer class="fixed bottom-0 left-0 z-20 w-full p-4 bg-white border-t border-red-500 shadow md:flex md:items-center md:justify-between md:p-6">
+                        <span class="text-sm text-gray-500 sm:text-center">© 2023 <a target="_blank" href="https://github.com/SilverDragonOfR" class="hover:underline">SilverDragonOfR</a> & <a target="_blank" href="https://github.com/SaiAdarshP" class="hover:underline">SaiAdarshP</a>.</span>
+                        <div class="flex mt-4 space-x-5 sm:justify-center md:mt-0">
+                            <a href="/" class="text-gray-400 hover:text-red-500 hover:scale-125 duration-300">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 8 19">
+                                    <path fill-rule="evenodd" d="M6.135 3H8V0H6.135a4.147 4.147 0 0 0-4.142 4.142V6H0v3h2v9.938h3V9h2.021l.592-3H5V3.591A.6.6 0 0 1 5.592 3h.543Z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="sr-only">Facebook page</span>
+                            </a>
+                            <a href="/" class="text-gray-400 hover:text-red-500 hover:scale-125 duration-300">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 17">
+                                    <path fill-rule="evenodd" d="M20 1.892a8.178 8.178 0 0 1-2.355.635 4.074 4.074 0 0 0 1.8-2.235 8.344 8.344 0 0 1-2.605.98A4.13 4.13 0 0 0 13.85 0a4.068 4.068 0 0 0-4.1 4.038 4 4 0 0 0 .105.919A11.705 11.705 0 0 1 1.4.734a4.006 4.006 0 0 0 1.268 5.392 4.165 4.165 0 0 1-1.859-.5v.05A4.057 4.057 0 0 0 4.1 9.635a4.19 4.19 0 0 1-1.856.07 4.108 4.108 0 0 0 3.831 2.807A8.36 8.36 0 0 1 0 14.184 11.732 11.732 0 0 0 6.291 16 11.502 11.502 0 0 0 17.964 4.5c0-.177 0-.35-.012-.523A8.143 8.143 0 0 0 20 1.892Z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="sr-only">Twitter page</span>
+                            </a>
+                            <a href="/" class="text-gray-400 hover:text-red-500 hover:scale-125 duration-300">
+                                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.5rg/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 .333A9.911 9.911 0 0 0 6.866 19.65c.5.092.678-.215.678-.477 0-.237-.01-1.017-.014-1.845-2.757.6-3.338-1.169-3.338-1.169a2.627 2.627 0 0 0-1.1-1.451c-.9-.615.07-.6.07-.6a2.084 2.084 0 0 1 1.518 1.021 2.11 2.11 0 0 0 2.884.823c.044-.503.268-.973.63-1.325-2.2-.25-4.516-1.1-4.516-4.9A3.832 3.832 0 0 1 4.7 7.068a3.56 3.56 0 0 1 .095-2.623s.832-.266 2.726 1.016a9.409 9.409 0 0 1 4.962 0c1.89-1.282 2.717-1.016 2.717-1.016.366.83.402 1.768.1 2.623a3.827 3.827 0 0 1 1.02 2.659c0 3.807-2.319 4.644-4.525 4.889a2.366 2.366 0 0 1 .673 1.834c0 1.326-.012 2.394-.012 2.72 0 .263.18.572.681.475A9.911 9.911 0 0 0 10 .333Z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="sr-only">GitHub account</span>
+                            </a>
+                        </div>
+                    </footer>
+                </div>
+            </div>  
+        </main>
+    </body>
+
+    <script defer src={% static "js/form_modal.js" %}></script>
+    <script defer src={% static "js/toggle.js" %}></script>
+    <script defer src={% static "js/profile_modal.js" %}></script>
+    <script defer src={% static "js/error.js" %}></script>
+</html>

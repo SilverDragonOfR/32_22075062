@@ -1,0 +1,1 @@
+const csrftoken = document.getElementsByName("csrfmiddlewaretoken")[0].value
