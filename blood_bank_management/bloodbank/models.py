@@ -14,6 +14,7 @@ class BloodBank(models.Model):
     # Creating table
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='bloodbank', default=None)
     bloodbank_name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='signup/', default=None)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     address = models.CharField(max_length=200)
     pincode = models.CharField(max_length=6)
@@ -92,6 +93,7 @@ class Donation(models.Model):
     info = models.CharField(max_length=10, choices=INFO_CHOICES)
     is_liked = models.BooleanField(default=False)
     is_seen = models.BooleanField(default=False)
+    first_save = models.BooleanField(default=False)
 
     def validate(self):
         is_validate = True

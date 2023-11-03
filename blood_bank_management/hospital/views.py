@@ -32,11 +32,12 @@ def signup(request):
         return render(request, "hospital/signup.html", context)
     elif request.method == "POST":
         name, city_name, address, phone, pincode , employees, email, password = [ request.POST.get("name"),  request.POST.get("city"), request.POST.get("address"), request.POST.get("phone"), request.POST.get("pincode"), request.POST.get("employees"), request.POST.get("email"), request.POST.get("password"),]
+        image = request.FILES["image"]
         if User.objects.filter(username=email):
             cities = City.objects.all().values_list("city_name")
             context = {
                 "wrong": True,
-                "wrong_text": error_msg,
+                "wrong_text": "Email already exists",
                 "cities": cities
             }
             return render(request, "hospital/signup.html", context)
@@ -55,6 +56,7 @@ def signup(request):
             return render(request, "hospital/signup.html", context)
         user.save()
         hospital.save()
+        hospital.image.save(image.name, image)
         django_login(request, user)
         return redirect("/hospital/dashboard/")
     else:
@@ -66,6 +68,7 @@ def dashboard(request):
     if request.method == "GET":
         user = request.user
         hospital = Hospital.objects.filter(user=user)
+        cities = City.objects.all().values_list("city_name")
         requests = Request.objects.filter(hospital=hospital[0]).order_by("-request_date")
         requests_pending = [request for request in requests if (not request.is_accepted) ]
         requests_accepted = [request for request in requests if (request.is_accepted and date.today()<=request.expected_arrival_date) ]
@@ -83,7 +86,8 @@ def dashboard(request):
             "num_of_requests_accepted" : num_of_requests_accepted,
             "num_of_requests_completed" : num_of_requests_completed,
             "sum_of_amount" : sum_of_amount,
-            "hospital" : hospital[0]
+            "hospital" : hospital[0],
+            "cities": cities
         }
         return render(request, "hospital/dashboard.html", context)
     
@@ -98,3 +102,54 @@ def dashboard(request):
     else:
         raise PermissionDenied
 
+@hospital_required
+def edit_profile(request):
+    if request.method == "POST":
+        user = request.user
+        name, city_name, address, phone, pincode , employees = [ request.POST.get("name"),  request.POST.get("city"), request.POST.get("address"), request.POST.get("phone"), request.POST.get("pincode"), request.POST.get("employees"),]
+        image = request.FILES["image"]
+        city = City.objects.get(city_name=city_name)
+        hospital = Hospital.objects.get(user=user)
+        hospital.name, hospital.city, hospital.address, hospital.phone, hospital.pincode, hospital.employees = name, city, address, phone, pincode, employees
+        is_donor_valid, error_msg = hospital.validate()
+        if not is_donor_valid:
+            cities = City.objects.all().values_list("city_name")
+            context = {
+                "wrong": True,
+                "wrong_text": error_msg,
+                "cities": cities
+            }
+            return render(request, "hospital/signup.html", context)
+        hospital.save()
+        hospital.image.save(image.name, image)
+        return redirect("/hospital/dashboard/")
+    else:
+        raise PermissionDenied
+    
+@hospital_required
+def update_pending_requests(request, pk):
+    if request.method == "POST":
+        pk = int(pk)
+        if not Request.objects.filter(pk=pk).exists():
+            return redirect("/hospital/dashboard/")        
+        req = Request.objects.get(pk=pk)
+        bloodgroup, amount = [ request.POST.get("bloodgroup"), request.POST.get("amount") ]
+        request_date = datetime.today().strftime('%Y-%m-%d')
+        req.blood_group = bloodgroup
+        req.amount = amount
+        req.request_date = request_date
+        req.save()
+        return redirect("/hospital/dashboard/")
+    else:
+        raise PermissionDenied
+
+@hospital_required
+def delete_pending_requests(request, pk):
+    pk = int(pk)
+    if not Request.objects.filter(pk=pk).exists():
+        return redirect("/hospital/dashboard/")
+    request = Request.objects.get(pk=pk)
+    if request.is_accepted:
+        return redirect("/hospital/dashboard/")
+    request.delete()
+    return redirect("/hospital/dashboard/")

@@ -15,11 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from .views import signup, dashboard, donations, pending_requests
+from .views import signup, dashboard, donations, pending_requests, edit_profile, update_bloodbank_camps, delete_bloodbank_camps
 
 urlpatterns = [
     path("signup/", signup),
     path("dashboard/", dashboard),
     path("donations/", donations),
-    path("pendingrequests/", pending_requests)
+    path("pendingrequests/", pending_requests),
+    path("edit_profile/", edit_profile),
+    path("camps/update/<str:pk>", update_bloodbank_camps),
+    path("camps/delete/<str:pk>", delete_bloodbank_camps )
 ]

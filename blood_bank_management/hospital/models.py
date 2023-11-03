@@ -12,6 +12,7 @@ class Hospital(models.Model):
     # Creating table
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='hospital', default=None)
     name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='signup/', default=None)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     address = models.CharField(max_length=200)
     phone = models.CharField(max_length=10)
@@ -34,7 +35,7 @@ class Hospital(models.Model):
         return (is_validate, error_msg)
         
 
-    def _str_(self):
+    def __str__(self):
         return self.name
     
 class Request(models.Model):
@@ -61,5 +62,5 @@ class Request(models.Model):
         
         return (is_validate, error_msg) 
 
-    def str(self):
+    def __str__(self):
         return f"{self.hospital} | {self.request_date}"

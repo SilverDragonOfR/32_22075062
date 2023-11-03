@@ -46,8 +46,8 @@
 
                 <div class="fixed flex top-[68px] flex-col top-0 left-0 w-14 hover:w-64 md:w-64 bg-red-700  h-full text-white transition-all duration-300 border-none z-10 sidebar">
                     <div class="flex items-center py-10 justify-center md:justify-center  w-14 md:w-64 h-14 bg-red-600  border-none">
-                        <img class="w-10 h-10 md:w-10 md:h-10 mr-4 rounded-full overflow-hidden" src={% static "images/dummy-avatar.jpg" %} />
-                        <span class="hidden md:block">{{ hospital.name }}</span>
+                        <img class="w-10 h-10 md:w-10 md:h-10 mr-4 rounded-full overflow-hidden" src="{% with default_image="images/dummy-avatar.jpg" %}{{ hospital.image.url|default:default_image }}{% endwith %}" />
+                        <span class="hidden md:block text-2xl">{{ hospital.name }}</span>
                     </div>
                     <div class="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
                     <ul class="flex flex-col py-4 space-y-1">
@@ -83,8 +83,6 @@
                     </div>
                 </div>
 
-
-
                 <!-- Profile Modal -->
                 <div class="relative z-10 hidden duration-500" aria-labelledby="modal-title" role="dialog" aria-modal="true" id="profile-modal">
                     <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
@@ -96,7 +94,7 @@
                             <div class="relative flex h-32 w-full justify-center rounded-lg bg-cover" >
                                 <img src={% static "images/red-background.png" %} class="absolute flex h-32 w-full justify-center rounded-lg bg-cover"> 
                                 <div class="absolute -bottom-12 flex h-[87px] w-[87px] items-center justify-center rounded-full border-[4px] border-white bg-pink-400 dark:!border-navy-700">
-                                    <img class="h-full w-full rounded-full" src={% static "images/dummy-avatar.jpg" %} />
+                                    <img class="h-full w-full rounded-full" src="{% with default_image="images/dummy-avatar.jpg" %}{{ hospital.image.url|default:default_image }}{% endwith %}" />
                                 </div>
                             </div>
                             <div class="absolute right-4 top-4 flex justify-end "> 
@@ -134,6 +132,9 @@
                                                 <h3 class="font-bold text-xl text-gray-800 font-link">Employees : </h3>
                                                 <h3 class="text-lg text-gray-700 font-button"> {{ hospital.employees }} </h3>
                                             </div>
+                                            <div class="inline-flex w-full items-center justify-end gap-x-6">
+                                                <h3 id="editModalBtn" class="text-lg text-red-700 font-link hover:underline cursor-pointer"> Edit </h3>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -145,6 +146,71 @@
                     </div>
                 </div>
                 <!-- Profile Modal -->
+
+                <!-- Edit Profile Modal -->
+                <div class="relative z-10 hidden duration-500" aria-labelledby="modal-title" role="dialog" aria-modal="true" id="edit-profile-modal">
+                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                
+                    <div class="fixed inset-0 z-10 w-screen overflow-y-auto rounded-xl my-28">
+                    <div class="flex min-h-full items-center justify-center text-center ">
+                        <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all  h-full sm:w-full sm:max-w-md">
+                        <div class="bg-white">
+                            <div class="absolute right-4 top-4 flex justify-end "> 
+                                <button type="button" id="closeEditProfileModalBtn" class="text-black bg-transparent hover:text-red-500 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:scale-110 duration-300" data-modal-hide="default-modal">
+                                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <div class="p-5">
+                                <h1 class="text-2xl font-button font-bold font-h leading-tight tracking-tight text-gray-900 md:text-3xl">
+                                    Edit Profile
+                                </h1>
+                                <form class="space-y-4 md:space-y-6" action="/hospital/edit_profile/" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div>
+                                        <label for="name" class="block mb-2 text-sm font-bold text-gray-900 font-button">Name</label>
+                                        <input value={{ hospital.name }} type="text" name="name" id="name" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="abc xyz" required>
+                                    </div>
+                                    <div>
+                                        <label for="image" class="block mb-2 text-sm font-bold text-gray-900 font-button">Image</label>
+                                        <input type="file" accept="image/*" name="image" id="image" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="abc xyz" required>
+                                    </div>
+                                    <div>
+                                        <label for="address" class="block mb-2 text-sm font-bold text-gray-900 font-button">Address</label>
+                                        <input value={{ hospital.address }} type="text" name="address" id="address" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="C-104, abc, qwerty" required>
+                                    </div>
+                                    <div>
+                                        <label for="city" class="block mb-2 text-sm font-bold text-gray-900 font-button">City</label>
+                                        <select value={{ hospital.city.city_name }} id="city" name="city" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required>
+                                            <option style="display:none;"></option>
+                                            {% for city in cities %}
+                                                <option {% if city.0 == hospital.city.city_name %}selected{% endif %} value={{ city.0 }}>{{ city.0 }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="pincode" class="block mb-2 text-sm font-bold text-gray-900 font-button">Pincode</label>
+                                        <input value={{ hospital.pincode }} type="text" name="pincode" id="pincode" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="XXXXXX" required>
+                                    </div>
+                                    <div>
+                                        <label for="employees" class="block mb-2 text-sm font-bold text-gray-900 font-button">Employees</label>
+                                        <input value={{ hospital.employees }} type="number" min="1" step="1" name="employees" id="employees" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="-" required>
+                                    </div>
+                                    <div>
+                                        <label for="phone" class="block mb-2 text-sm font-bold text-gray-900 font-button">Phone</label>
+                                        <input value={{ hospital.phone }} oninvalid="this.setCustomValidity('Phone number is of 10 digits')" oninput="this.setCustomValidity('')" type="tel" name="phone" id="phone" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" pattern="[0-9]{10}" placeholder="xxxxxxxxxx" required>
+                                    </div>
+                                    <button type="submit" id="post-button" class="disabled:bg-gray-200 w-full bg-red-500 font-button text-white focus:ring-2 focus:ring-black font-bold rounded-lg text-lg px-5 py-2.5 text-center hover:bg-red-700">Edit</button>
+                                </form>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!-- Edit Profile Modal -->
 
                 <!-- Form Modal -->
                 <div class="relative z-10 hidden duration-500" aria-labelledby="modal-title" role="dialog" aria-modal="true" id="form-modal">
@@ -166,7 +232,7 @@
                                 <h1 class="text-2xl font-button font-bold font-h leading-tight tracking-tight text-gray-900 md:text-3xl">
                                     New Request
                                 </h1>
-                                <form class="space-y-4 md:space-y-6" method="post">
+                                <form class="space-y-4 md:space-y-6" method="post" action="/hospital/dashboard/">
                                     {% csrf_token %}
                                     <div>
                                         <label for="bloodgroup"  class="block mb-2 text-sm font-bold text-gray-900 font-button">Blood Group</label>
@@ -195,6 +261,57 @@
                     </div>
                 </div>
                 <!-- Form Modal -->
+
+                <!-- Edit Form Modal -->
+                <div class="relative z-10 hidden duration-500" aria-labelledby="modal-title" role="dialog" aria-modal="true" id="form-modal2">
+                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+                
+                    <div class="fixed inset-0 z-10 w-screen overflow-y-auto ">
+                    <div class="flex min-h-full items-center justify-center text-center ">
+                        <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all  h-full sm:w-full sm:max-w-md">
+                        <div class="bg-white">
+                            <div class="absolute right-4 top-4 flex justify-end "> 
+                                <button type="button" id="closeModalBtn3" class="text-black bg-transparent hover:text-red-500 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center hover:scale-110 duration-300" data-modal-hide="default-modal">
+                                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                            </div>
+                            <div class="p-5">
+                                <h1 class="text-2xl font-button font-bold font-h leading-tight tracking-tight text-gray-900 md:text-3xl">
+                                    Edit Request
+                                </h1>
+                                <form class="space-y-4 md:space-y-6" method="post" id="forminfo">
+                                    {% csrf_token %}
+                                    <input hidden for="requestpk" name="requestpk" id="requestpk"></input>
+                                    <div>
+                                        <label for="bloodgroup"  class="block mb-2 text-sm font-bold text-gray-900 font-button">Blood Group</label>
+                                        <select id="bloodgroup-edit" name="bloodgroup" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required>
+                                            <option style="display:none;"></option>
+                                            <option value="A+">A+</option>
+                                            <option value="B+">B+</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="O+">O+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B-">B-</option>
+                                            <option value="AB-">AB-</option>
+                                            <option value="O-">O-</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="amount" class="block mb-2 text-sm font-bold text-gray-900 font-button">Amount</label>
+                                        <input type="number" min="1" step="1" name="amount" id="amount-edit" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="-" required>
+                                    </div>
+                                    <button id="edit-button" class="disabled:bg-gray-200 w-full bg-red-500 font-button text-white focus:ring-2 focus:ring-black font-bold rounded-lg text-lg px-5 py-2.5 text-center hover:bg-red-700">Edit</button>
+                                </form>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <!-- Edit Form Modal -->
                 
                 <div class="h-full ml-14 mt-14 md:ml-64">
                 
@@ -259,20 +376,23 @@
                                         <h3 class="font-h text-gray-500 text-xl font-link">Pending Requests (<span>{{ num_of_requests_pending }}</span>)</h3> 
                                     </div>
                                     <div class="mb-12">
+                                        
                                         {% for request in requests_pending %}
                                         <div class="py-3">
                                             <details class="group bg-white shadow-lg rounded-lg">
-                                                <summary class="flex cursor-pointer list-none items-center justify-between  p-4 ">
-                                                    <p class="text-gray-600">{{ request.request_date }}</p>
-                                                    <p class="text-xl font-link">{{ request.blood_group }}</p>
-                                                    <p></p>
-                                                    <p class="text-red-600 font-link text-xl">{{ request.amount }}ml</p>
-                                                    <p></p><p></p>
-                                                    <svg viewBox="0 0 24 24" class="group w-8 h-8 text-gray-400 rounded-full p-[4px] hover:text-gray-700 hover:bg-gray-200  hover:scale-110 duration-300" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <summary class="grid cursor-pointer list-none grid-cols-9 p-4 ">
+                                                    <p class="text-gray-600 col-span-2">{{ request.request_date }}</p>
+                                                    <p class="text-xl font-link col-span-2">{{ request.blood_group }}</p>
+                                                    <p class="text-red-600 font-link text-xl col-span-2">{{ request.amount }}ml</p>
+                                                    <a id="openModalBtn3_{{ request.pk }}_{{ request.blood_group }}_{{ request.amount }}" class="openModalBtn3 col-span-1 place-self-end"><svg fill="#ffffff" height="40px" width="40px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"  viewBox="-79.73 -79.73 466.10 466.10" xml:space="preserve" stroke="#ffffff" stroke-width="0.00306637" class="bg-yellow-500 rounded-md shadow-yellow-200 shadow-md hover:bg-yellow-700 hover:scale-105 hover:shadow-xl duration-300"><g id="SVGRepo_bgCarrier" stroke-width="0"/><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="2.453096"/><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M12.809,238.52L0,306.637l68.118-12.809l184.277-184.277l-55.309-55.309L12.809,238.52z M60.79,279.943l-41.992,7.896 l7.896-41.992L197.086,75.455l34.096,34.096L60.79,279.943z"/> <path d="M251.329,0l-41.507,41.507l55.308,55.308l41.507-41.507L251.329,0z M231.035,41.507l20.294-20.294l34.095,34.095 L265.13,75.602L231.035,41.507z"/></svg></a>
+                                                    <a href="/hospital/requests/delete/{{ request.pk }}" class="flex justify-center items-center col-span-1 place-self-end bg-red-500 rounded-md shadow-red-200 shadow-md hover:bg-red-700 hover:scale-105 hover:shadow-xl duration-300 w-[40px] h-[40px]">
+                                                        <svg width="28px" height="28px" viewBox="0 -0.5 21 21" version="1.1" xmlns="http://www.w3.org/2000/svg"  fill="#ffffff" stroke="#ffffff" stroke-width="0.00306637" viewBox="-79.73 -79.73 466.10 466.10"><g id="SVGRepo_bgCarrier" stroke-width="0" /><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/><g id="SVGRepo_iconCarrier"> <title>delete [#1487]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-179.000000, -360.000000)" fill="#ffffff"> <g id="icons" transform="translate(56.000000, 160.000000)"> <path d="M130.35,216 L132.45,216 L132.45,208 L130.35,208 L130.35,216 Z M134.55,216 L136.65,216 L136.65,208 L134.55,208 L134.55,216 Z M128.25,218 L138.75,218 L138.75,206 L128.25,206 L128.25,218 Z M130.35,204 L136.65,204 L136.65,202 L130.35,202 L130.35,204 Z M138.75,204 L138.75,200 L128.25,200 L128.25,204 L123,204 L123,206 L126.15,206 L126.15,220 L140.85,220 L140.85,206 L144,206 L144,204 L138.75,204 Z" id="delete-[#1487]"> </path> </g> </g> </g> </g></svg>
+                                                    </a>
+                                                    <svg viewBox="0 0 24 24" class="col-span-1 place-self-end group w-8 h-8 text-gray-400 rounded-full p-[4px] hover:text-gray-700 hover:bg-gray-200  hover:scale-110 duration-300" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                         <circle cx="12" cy="12" r="1"></circle>
                                                         <circle cx="19" cy="12" r="1"></circle>
                                                         <circle cx="5" cy="12" r="1"></circle>
-                                                      </svg>
+                                                    </svg>
                                                 </summary>
                                                 <div class="group-open:animate-fadeIn mt-3 text-neutral-600 grid grid-cols-4 gap-4 p-4">
                                                     <h2 class="font-bold text-lg">Status :</h2><p class="text-red-500 col-span-3">Pending</p>
@@ -291,13 +411,11 @@
                                         {% for request in requests_accepted %}
                                         <div class="py-3">
                                             <details class="group bg-white shadow-lg rounded-lg">
-                                                <summary class="flex cursor-pointer list-none items-center justify-between  p-4 ">
-                                                    <p class="text-gray-600">{{ request.request_date }}</p>
-                                                    <p class="text-xl font-link">{{ request.blood_group }}</p>
-                                                    <p></p>
-                                                    <p class="text-red-600 font-link text-xl">{{ request.amount }}ml</p>
-                                                    <p></p><p></p>
-                                                    <svg viewBox="0 0 24 24" class="group w-8 h-8 text-gray-400 rounded-full p-[4px] hover:text-gray-700 hover:bg-gray-200  hover:scale-110 duration-300" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <summary class="grid cursor-pointer list-none grid-cols-9 p-4 ">
+                                                    <p class="text-gray-600 col-span-2">{{ request.request_date }}</p>
+                                                    <p class="text-xl font-link col-span-2">{{ request.blood_group }}</p>
+                                                    <p class="text-red-600 font-link text-xl col-span-2">{{ request.amount }}ml</p>
+                                                    <svg viewBox="0 0 24 24" class="col-span-3 place-self-end group w-8 h-8 text-gray-400 rounded-full p-[4px] hover:text-gray-700 hover:bg-gray-200  hover:scale-110 duration-300" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                         <circle cx="12" cy="12" r="1"></circle>
                                                         <circle cx="19" cy="12" r="1"></circle>
                                                         <circle cx="5" cy="12" r="1"></circle>
@@ -320,13 +438,11 @@
                                         {% for request in requests_completed %}
                                         <div class="py-3">
                                             <details class="group bg-white shadow-lg rounded-lg">
-                                                <summary class="flex cursor-pointer list-none items-center justify-between  p-4 ">
-                                                    <p class="text-gray-600">{{ request.request_date }}</p>
-                                                    <p class="text-xl font-link">{{ request.blood_group }}</p>
-                                                    <p></p>
-                                                    <p class="text-red-600 font-link text-xl">{{ request.amount }}ml</p>
-                                                    <p></p><p></p>
-                                                    <svg viewBox="0 0 24 24" class="group w-8 h-8 text-gray-400 rounded-full p-[4px] hover:text-gray-700 hover:bg-gray-200  hover:scale-110 duration-300" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <summary class="grid cursor-pointer list-none grid-cols-9 p-4 ">
+                                                    <p class="text-gray-600 col-span-2">{{ request.request_date }}</p>
+                                                    <p class="text-xl font-link col-span-2">{{ request.blood_group }}</p>
+                                                    <p class="text-red-600 font-link text-xl col-span-2">{{ request.amount }}ml</p>
+                                                    <svg viewBox="0 0 24 24" class="col-span-3 place-self-end group w-8 h-8 text-gray-400 rounded-full p-[4px] hover:text-gray-700 hover:bg-gray-200  hover:scale-110 duration-300" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                         <circle cx="12" cy="12" r="1"></circle>
                                                         <circle cx="19" cy="12" r="1"></circle>
                                                         <circle cx="5" cy="12" r="1"></circle>
@@ -345,8 +461,7 @@
                             </div>
                         </div>
                     </div>
-   
-                    <!-- Donation Summary -->         
+                    <!-- Request Summary -->         
                                     
                     <footer class="fixed bottom-0 left-0 z-20 w-full p-4 bg-white border-t border-red-500 shadow md:flex md:items-center md:justify-between md:p-6">
                         <span class="text-sm text-gray-500 sm:text-center">© 2023 <a target="_blank" href="https://github.com/SilverDragonOfR" class="hover:underline">SilverDragonOfR</a> & <a target="_blank" href="https://github.com/SaiAdarshP" class="hover:underline">SaiAdarshP</a>.</span>
@@ -376,6 +491,7 @@
         </main>
     </body>
 
+    <script defer src={% static "js/form_modal4.js" %}></script>
     <script defer src={% static "js/toggle.js" %}></script>
     <script defer src={% static "js/profile_modal.js" %}></script>
     <script defer src={% static "js/form_modal.js" %}></script>

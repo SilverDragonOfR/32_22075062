@@ -189,6 +189,7 @@
                                 
                                 <form class="space-y-4 md:space-y-6" method="post">
                                     {% csrf_token %}
+                                    <input type="text" id="requestpk" name="requestpk" hidden></input>
                                     <div>
                                         <label for="expectedarrivaldate" class="block mb-2 text-sm font-bold text-gray-900 font-button">Expected Arrival Date</label>
                                         <input type="date" name="expectedarrivaldate" id="expectedarrivaldate" class="font-button bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required>
@@ -246,7 +247,7 @@
                                                     <h2 class="font-bold text-lg">City :</h2><p class="col-span-3">{{ blood_request.hospital.city }}</p> 
                                                     <h2 class="font-bold text-lg">Pincode :</h2><p class="col-span-3">{{ blood_request.hospital.pincode }}</p>
                                                     <h2 class="font-bold text-lg">Phone :</h2><p class="col-span-3">{{ blood_request.hospital.phone }}</p>
-                                                    <a id="openModalBtn2" class="cols-span-4 w-[115px] my-4 bg-green-500 flex justify-center items-center  rounded-md text-white hover:shadow-md hover:shadow-green-300 hover:scale-105 duration-300">
+                                                    <a id="openModalBtn2_{{ blood_request.pk }}" class="openModalBtn2 cols-span-4 w-[115px] my-4 bg-green-500 flex justify-center items-center  rounded-md text-white hover:shadow-md hover:shadow-green-300 hover:scale-105 duration-300">
                                                         <p class="font-button font-bold text-md py-1">Accept</p>
                                                     </a> 
                                                 </div>
@@ -358,6 +359,6 @@
 
     <script defer src={% static "js/toggle.js" %}></script>
     <script defer src={% static "js/profile_modal.js" %}></script>
-    <script defer src={% static "js/form_modal.js" %}></script>
+    <script defer src={% static "js/form_modal_requests.js" %}></script>
     <script defer src={% static "js/error.js" %}></script>
 </html>

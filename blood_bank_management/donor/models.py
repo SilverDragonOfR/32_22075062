@@ -1,6 +1,7 @@
 from django.db import models
 from main.models import City, User
 from datetime import datetime
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 # Options
 GENDER_CHOICES = [("M", "M"), ("F", "F")]
@@ -12,6 +13,7 @@ class Donor(models.Model):
     # Creating table
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='donor', default=None)
     name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='signup/', default=None)
     blood_group = models.CharField(max_length=3, choices=BLOOD_GROUP_CHOICES)
     date_of_birth = models.DateField()
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES)

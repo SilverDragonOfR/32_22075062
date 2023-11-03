@@ -33,6 +33,7 @@ def signup(request):
         return render(request, "bloodbank/signup.html", context)
     elif request.method == "POST":
         bloodbank_name, city_name, address, pincode, employees, phone, manager_name, email, password = [ request.POST.get("name"), request.POST.get("city"), request.POST.get("address"), request.POST.get("pincode"), request.POST.get("employees"), request.POST.get("phone"), request.POST.get("manager"), request.POST.get("email"), request.POST.get("password"),]
+        image = request.FILES["image"]
         if User.objects.filter(username=email):
             cities = City.objects.all().values_list("city_name")
             context = {
@@ -56,6 +57,7 @@ def signup(request):
             return render(request, "bloodbank/signup.html", context)
         user.save()
         bloodbank.save()
+        bloodbank.image.save(image.name, image)
         django_login(request, user)
         return redirect("/bloodbank/dashboard/")
     else:
@@ -344,3 +346,59 @@ def pending_requests(request):
 
     else:
         raise PermissionDenied
+    
+@bloodbank_required
+def edit_profile(request):
+    if request.method == "POST":
+        user = request.user
+        name, city_name, address, phone, pincode , employees, manager = [ request.POST.get("name"),  request.POST.get("city"), request.POST.get("address"), request.POST.get("phone"), request.POST.get("pincode"), request.POST.get("employees"), request.POST.get("manager")]
+        image = request.FILES["image"]
+        city = City.objects.get(city_name=city_name)
+        bloodbank = BloodBank.objects.get(user=user)
+        bloodbank.bloodbank_name, bloodbank.city, bloodbank.address, bloodbank.phone, bloodbank.pincode, bloodbank.employees, bloodbank.manager_name = name, city, address, phone, pincode, employees, manager
+        is_donor_valid, error_msg = bloodbank.validate()
+        if not is_donor_valid:
+            cities = City.objects.all().values_list("city_name")
+            context = {
+                "wrong": True,
+                "wrong_text": error_msg,
+                "cities": cities
+            }
+            return render(request, "bloodbank/signup.html", context)
+        bloodbank.save()
+        bloodbank.image.save(image.name, image)
+        return redirect("/bloodbank/dashboard/")
+    else:
+        raise PermissionDenied
+    
+@bloodbank_required
+def update_bloodbank_camps(request, pk):
+    if request.method == "POST":
+        pk = int(pk)
+        if not Camp.objects.filter(pk=pk).exists():
+            redirect("/bloodbank/dashboard")
+        camp = Camp.objects.get(pk=pk)
+        name, start_date, end_date, address, city_name, pincode = [ request.POST.get("name"), request.POST.get("startdate"), request.POST.get("enddate"), request.POST.get("address"), request.POST.get("city"),  request.POST.get("pincode") ]
+        city = City.objects.get(city_name=city_name)
+        camp.name = name
+        camp.start_date = start_date
+        camp.end_date = end_date
+        camp.address = address
+        camp.city = city
+        camp.pincode = pincode
+        is_valid, error_msg = camp.validate()
+        if not is_valid:
+            return redirect("/bloodbank/dashboard")
+        camp.save()
+        return redirect("/bloodbank/dashboard")
+    else :
+        raise PermissionDenied
+    
+@bloodbank_required
+def delete_bloodbank_camps(request, pk):
+    pk = int(pk)
+    if not Camp.objects.filter(pk=pk).exists():
+        return redirect("/bloodbank/dashboard") 
+    camp = Camp.objects.get(pk=pk)
+    camp.delete()
+    return redirect("/bloodbank/dashboard")
