@@ -174,11 +174,15 @@ def donations(request):
         user = request.user
         bloodbank = BloodBank.objects.filter(user=user)
         donations = Donation.objects.filter(bloodbank=bloodbank[0]).order_by("-donation_date")
+        users = User.objects.filter(is_donor = True)
+        cities = City.objects.all().values_list("city_name")
         context = {
             "wrong": False,
             "wrong_text": "",
             "bloodbank": bloodbank[0],
-            "donations": donations
+            "donations": donations,
+            "donors": users,
+            "cities" : cities
         }
         return render(request, "bloodbank/donations.html", context)
     
@@ -188,21 +192,29 @@ def donations(request):
         donor_email, donation_date, amount,  pct_contamination,  glucose, platelet_count, info = [ request.POST.get("donoremail"), request.POST.get("birthday"), int(request.POST.get("amount")),  int(request.POST.get("pctcontamination")),int(request.POST.get("glucose")), int(request.POST.get("plateletcount")), request.POST.get("info")]
         bloodbank = BloodBank.objects.get(user=request.user)
         if not User.objects.filter(email=donor_email).exists():
-            donations = Donation.objects.filter(bloodbank=bloodbank[0]).order_by("-donation_date")
+            donations = Donation.objects.filter(bloodbank=bloodbank).order_by("-donation_date")
+            users = User.objects.filter(is_donor = True)
+            cities = City.objects.all().values_list("city_name")
             context = {
                 "wrong": True,
                 "wrong_text": "No such donor exists",
                 "bloodbank": bloodbank,
-                "donations": donations
+                "donations": donations,
+                "donors": users,
+                "cities" : cities
             }
             return render(request, "bloodbank/donations.html", context)
         elif not Donor.objects.filter(user=User.objects.get(email=donor_email)).exists():
-            donations = Donation.objects.filter(bloodbank=bloodbank[0]).order_by("-donation_date")
+            donations = Donation.objects.filter(bloodbank=bloodbank).order_by("-donation_date")
+            users = User.objects.filter(is_donor = True)
+            cities = City.objects.all().values_list("city_name")
             context = {
                 "wrong": True,
                 "wrong_text": "No such donor exists",
                 "bloodbank": bloodbank,
-                "donations": donations
+                "donations": donations,
+                "donors": users,
+                "cities" : cities
             }
             return render(request, "bloodbank/donations.html", context)
             
@@ -213,12 +225,16 @@ def donations(request):
         donation = Donation(donor=donor, bloodbank=bloodbank, donation_date=donation_date, amount=amount, blood_group=blood_group, pct_contamination=pct_contamination, glucose=glucose, platelet_count=platelet_count, info=info)
         is_donation_valid, error_msg = donation.validate()
         if not is_donation_valid:
-            donations = Donation.objects.filter(bloodbank=bloodbank[0]).order_by("-donation_date")
+            donations = Donation.objects.filter(bloodbank=bloodbank).order_by("-donation_date")
+            users = User.objects.filter(is_donor = True)
+            cities = City.objects.all().values_list("city_name")
             context = {
                 "wrong": True,
                 "wrong_text": error_msg,
                 "bloodbank": bloodbank,
-                "donations": donations
+                "donations": donations,
+                "donors": users,
+                "cities" : cities
             }
             return render(request, "bloodbank/donations.html", context)
         donation.save()
@@ -243,7 +259,7 @@ def pending_requests(request):
         num_of_pending = len(pending)
         num_of_accepted = len(accepted)
         num_of_completed = len(completed)
-
+        cities = City.objects.all().values_list("city_name")
         context = {
             "wrong": False,
             "wrong_text": "",
@@ -253,7 +269,8 @@ def pending_requests(request):
             "completed" : completed,
             "num_of_pending" : num_of_pending,
             "num_of_accepted" : num_of_accepted,
-            "num_of_completed" : num_of_completed
+            "num_of_completed" : num_of_completed,
+            "cities" : cities
         }
         return render(request, "bloodbank/requests.html", context)
     
@@ -301,6 +318,7 @@ def pending_requests(request):
             num_of_pending = len(pending)
             num_of_accepted = len(accepted)
             num_of_completed = len(completed)
+            cities = City.objects.all().values_list("city_name")
             context = {
             "wrong": True,
             "wrong_text": "You don't have enough blood to accept that request",
@@ -310,7 +328,8 @@ def pending_requests(request):
             "completed" : completed,
             "num_of_pending" : num_of_pending,
             "num_of_accepted" : num_of_accepted,
-            "num_of_completed" : num_of_completed
+            "num_of_completed" : num_of_completed,
+            "cities" : cities
             }
             return render(request, "bloodbank/requests.html", context)
         
@@ -326,6 +345,7 @@ def pending_requests(request):
             num_of_pending = len(pending)
             num_of_accepted = len(accepted)
             num_of_completed = len(completed)
+            cities = City.objects.all().values_list("city_name")
             context = {
             "wrong": True,
             "wrong_text": error_msg,
@@ -335,7 +355,8 @@ def pending_requests(request):
             "completed" : completed,
             "num_of_pending" : num_of_pending,
             "num_of_accepted" : num_of_accepted,
-            "num_of_completed" : num_of_completed
+            "num_of_completed" : num_of_completed,
+            "cities" : cities
             }
             return render(request, "bloodbank/requests.html", context)
 

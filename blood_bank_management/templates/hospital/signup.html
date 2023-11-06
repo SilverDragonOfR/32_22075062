@@ -18,13 +18,12 @@
         <main class="bg-gray-100 w-full border-b border-gray-200">
 
             {% if wrong %}
-            <div class="top-20 absolute m-auto left-0 right-0 error mt-2">
-                <p class="text-sm font-link text-center text-red-600">
+            <div class="flex items-center justify-center top-20 absolute m-auto left-0 right-0 error mt-2 w-64 h-12 bg-red-200 border-l-2 border-red-700 rounded-md">
+                <p class="text-md font-link text-center text-red-600">
                     {{ wrong_text }}
                 </p>
             </div>
-            {% endif %}
-
+            {% endif %} 
             <nav class="bg-white w-full border-b-4 border-red-500 shadow-inner shadow-red-200 fixed z-50">
                 <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                     <a href="/" class="flex items-center hover:scale-105 hover:text-red-500 duration-300">
