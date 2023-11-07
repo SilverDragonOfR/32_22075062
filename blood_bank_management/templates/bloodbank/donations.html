@@ -56,7 +56,7 @@
 
                 <div class="fixed flex top-[68px] flex-col top-0 left-0 w-14 hover:w-64 md:w-64 bg-red-700  h-full text-white transition-all duration-300 border-none z-20 sidebar">
                     <div class="flex items-center py-10 justify-center md:justify-center  w-14 md:w-64 h-14 bg-red-600  border-none">
-                        <img class="w-10 h-10 md:w-10 md:h-10 mr-4 rounded-full overflow-hidden" src={% static "images/dummy-avatar.jpg" %} />
+                        <img class="w-10 h-10 md:w-10 md:h-10 mr-4 rounded-full overflow-hidden" src="{% with default_image="images/dummy-avatar.jpg" %}{{ bloodbank.image.url|default:default_image }}{% endwith %}" />
                         <span class="hidden md:block text-2xl">{{ bloodbank.bloodbank_name }}</span>
                     </div>
                     <div class="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
@@ -114,7 +114,7 @@
                             <div class="relative flex h-32 w-full justify-center rounded-lg bg-cover" >
                                 <img src={% static "images/red-background.png" %} class="absolute flex h-32 w-full justify-center rounded-lg bg-cover"> 
                                 <div class="absolute -bottom-12 flex h-[87px] w-[87px] items-center justify-center rounded-full border-[4px] border-white bg-pink-400 dark:!border-navy-700">
-                                    <img class="h-full w-full rounded-full" src={% static "images/dummy-avatar.jpg" %} />
+                                    <img class="h-full w-full rounded-full" src="{% with default_image="images/dummy-avatar.jpg" %}{{ bloodbank.image.url|default:default_image }}{% endwith %}" />
                                 </div>
                             </div>
                             <div class="absolute right-4 top-4 flex justify-end "> 

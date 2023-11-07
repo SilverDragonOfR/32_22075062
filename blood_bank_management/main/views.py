@@ -181,7 +181,7 @@ def forgot_password(request):
         email = request.POST.get("email")
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
-            if PasswordToken.objects.get(user = user):
+            if PasswordToken.objects.filter(user = user).exists():
                 PasswordToken.objects.filter(user = user).delete()
             token = str(uuid.uuid4())
             send_forgot_password_mail(user.email, token)
